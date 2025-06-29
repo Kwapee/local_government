@@ -1,6 +1,9 @@
 // import 'package:employer_self_service/utils/typography.dart'; // typography.dart was not used, can be removed if not needed elsewhere
 import 'package:flutter/material.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/widget/drawer.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/widget/homeCardPayment.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/widget/homeCards.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/widget/recentActivityCard.dart';
 import 'package:local_government_app/utils/colors.dart';
 import 'package:local_government_app/utils/typography.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // font_awesome_flutter was not used
@@ -17,6 +20,15 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late final List<Widget> pages;
   bool _isLoading = true; // Add loading state
+
+  final ScrollController _scrollController = ScrollController();
+
+  // 2. Remember to dispose of the controller to prevent memory leaks!
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -175,38 +187,48 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
 
   const Home({Key? key, required this.scaffoldKey}) : super(key: key);
 
   @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  // 1. Create the ScrollController for the recent activity list
+  final ScrollController _activityScrollController = ScrollController();
+
+  // 2. Dispose of the controller when the widget is removed
+  @override
+  void dispose() {
+    _activityScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    // The structure of Home widget is kept as is, assuming it's intentional for future content.
-    // If it's only for the menu icon, it could be simplified.
     return Container(
       child: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Align content to the start
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // This Stack + Padding + Column structure for a single IconButton is a bit verbose.
-            // Simplified to just Padding + IconButton if no stacking elements are planned.
-            // However, keeping original structure for now as requested was "fix bug".
             Stack(
               children: [
                 Padding(
                   padding: EdgeInsets.only(
                     left: size.width * 0.01,
                     top: size.width * 0.02,
-                  ), // Added a bit of top padding for visual appeal
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       IconButton(
                         onPressed: () {
-                          scaffoldKey.currentState?.openDrawer();
+                          // 3. Access the scaffoldKey via widget.scaffoldKey
+                          widget.scaffoldKey.currentState?.openDrawer();
                         },
                         icon: Icon(
                           Icons.menu,
@@ -215,81 +237,163 @@ class Home extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(left: size.width * 0.15),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const CircleAvatar(
-                              radius: 12,
-                              backgroundImage: AssetImage(
-                                'assets/images/gov_header_img.png',
-                              ),
-                              backgroundColor: Colors.transparent,
-                            ),
-                            SizedBox(width: size.width * 0.02),
-                            Expanded(
-                              // Use Expanded to handle long text
-                              child: Text(
-                                "Accra Metropolitan Assembly",
-                                style: tTextStyle500.copyWith(
-                                  color: ColorPack.black,
-                                  fontSize: size.width * 0.04,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: size.width * 0.60,
-                        height: size.height * 0.20,
-                        decoration: BoxDecoration(
-                          color: ColorPack.white,
-                          border: Border.all(color: ColorPack.darkGray),
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: ColorPack.boxShadow,
-                              blurRadius: 2.0,
-                              offset: const Offset(0, -2),
-                            ),
-                          ],
+                        padding: EdgeInsets.only(
+                          top: size.height * 0.02,
+                          left: size.width * 0.01,
+                          right: size.width * 0.01,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [Text("Active Request"), Text("2")],
+                                CustomCard(
+                                  title: 'Active Requests',
+                                  subtitle: '3',
+                                  icon: 'assets/images/request-active.png',
+                                  number: '+1',
+                                  numDescription: 'This Week',
+                                  // avatarColor property was missing in the original call, added for completeness
+                                  avatarColor: ColorPack.discoverBlue,
                                 ),
-                                CircleAvatar(
-                                  // Set a radius to define the size of the circle
-                                  radius: 40, // Example size, adjust as needed
-                                  // Optional: A background color for the area not covered by the image
-                                  backgroundColor: Colors.grey.shade200,
-
-                                  // Use the 'child' property instead of 'backgroundImage'
-                                  child: ClipOval(
-                                    child: Image.asset(
-                                      'assets/images/request-active.png',
-
-                                      // Here you can specify the fit!
-                                      fit: BoxFit.contain,
-
-                                      // It's good practice to provide a width and height
-                                      // to ensure the image is contained properly.
-                                      width:
-                                          20, // Slightly smaller than radius * 2
-                                      height: 20,
-                                    ),
-                                  ),
+                                SizedBox(width: size.width * 0.02),
+                                CustomCard(
+                                  title: 'Pending Requests',
+                                  subtitle: '12',
+                                  icon: 'assets/images/pending-actions.png',
+                                  number: '+3',
+                                  numDescription: 'This Month',
+                                  avatarColor: ColorPack.iconOrange,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: size.height * 0.01),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomCardPayment(
+                                  title: 'Payments Made',
+                                  subtitle: 'GHC 200',
+                                  icon: 'assets/images/payment.png',
+                                  numDescription: 'This Month',
+                                  avatarColor: ColorPack.badge2,
+                                ),
+                                SizedBox(width: size.width * 0.02),
+                                CustomCardPayment(
+                                  title: 'Total Payment Due',
+                                  subtitle: 'July',
+                                  icon: 'assets/images/payment_due.png',
+                                  numDescription: 'Property Tax',
+                                  avatarColor: ColorPack.badgeFont2,
                                 ),
                               ],
                             ),
                           ],
+                        ),
+                      ),
+
+                      // In your _HomeState build method
+                      Padding(
+                        padding:  EdgeInsets.only(top: size.height*0.05, left: size.width*0.01, right: size.width*0.01),
+                        child: Container(
+                          width: size.width * 0.95,
+                          height: size.height * 0.30,
+                          padding: const EdgeInsets.fromLTRB(
+                            16,
+                            16,
+                            8,
+                            16,
+                          ), // Adjust padding for scrollbar
+                          decoration: BoxDecoration(
+                            color: ColorPack.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.7),
+                                blurRadius: 5.0,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          // The main layout is still a Column
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // --- START OF FIX ---
+                        
+                              // 1. This Text widget is now a direct child of the Column,
+                              //    so it will NOT be part of the scrollable area.
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 8.0,
+                                ), // Match inner padding
+                                child: Text(
+                                  "Recent Activity",
+                                  style: tTextStyleBold.copyWith(
+                                    color: ColorPack.black,
+                                    fontSize: size.width * 0.04,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                        
+                              // 2. Wrap the scrollable part in Expanded. This makes it
+                              //    take up all the remaining vertical space in the card.
+                              Expanded(
+                                child: Scrollbar(
+                                  thumbVisibility: true,
+                                  thickness: 6.0,
+                                  radius: const Radius.circular(10),
+                                  controller: _activityScrollController,
+                                  child: SingleChildScrollView(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    controller: _activityScrollController,
+                                    // 3. This Column now ONLY contains the items you want to scroll.
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CustomRecentActivityCard(
+                                          title: "Property Tax Payment",
+                                          description:
+                                              "Payment of 120 processed successfully",
+                                          date: "2 hours ago",
+                                          image: "assets/images/property_img.png",
+                                        ),
+                                        const SizedBox(height: 12),
+                                        CustomRecentActivityCard(
+                                          title: "Waste Pickup Request",
+                                          description:
+                                              "Scheduled for tomorrow morning",
+                                          date: "1 day ago",
+                                          image: "assets/images/waste_img.png",
+                                        ),
+                                        const SizedBox(height: 12),
+                                        CustomRecentActivityCard(
+                                          title: "Water Leakage Report",
+                                          description:
+                                              "Under investigation by maintenance team",
+                                          date: "3 day ago",
+                                          image:
+                                              "assets/images/water_leakage.png",
+                                        ),
+                                        const SizedBox(height: 12),
+                                        CustomRecentActivityCard(
+                                          title: "Business Permit Application",
+                                          description: "Process Ongoing",
+                                          date: "4 day ago",
+                                          image:
+                                              "assets/images/business_permit.png",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // --- END OF FIX ---
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -297,12 +401,6 @@ class Home extends StatelessWidget {
                 ),
               ],
             ),
-            // Future content for the Home page can be added here within the outer Column
-            // For example:
-            // Padding(
-            //   padding: EdgeInsets.all(size.width * 0.04),
-            //   child: Text("Welcome to Home Page!", style: TextStyle(fontSize: 18)),
-            // )
           ],
         ),
       ),
