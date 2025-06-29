@@ -17,7 +17,7 @@ class AuthHeader extends StatelessWidget {
      final size = MediaQuery.of(context).size;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 40.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

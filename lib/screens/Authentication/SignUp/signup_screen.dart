@@ -34,12 +34,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _isLoading = false;
   String? _errorMessage;
   VerificationResult? _verificationResult;
-   bool _isPinEntered = false;
+  bool _isPinEntered = false;
 
   // Controllers
   final _ghanacardController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   final GhanaCardService _ghanaCardService = GhanaCardService();
 
@@ -56,10 +58,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _ghanacardController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _emailController.dispose();
+    _phoneNumberController.dispose();
     super.dispose();
   }
 
-   void _validatePin() {
+  void _validatePin() {
     // A simple validation: check if the text is not empty.
     // You could add more complex validation here, like checking the format.
     final isPinValid = _ghanacardController.text.trim().isNotEmpty;
@@ -91,47 +95,46 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _takePicture() async {
-  // 1. Check for camera permission
-  var status = await Permission.camera.request();
-  if (status.isGranted) {
-    // 2. Open camera to take a picture
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
+    // 1. Check for camera permission
+    var status = await Permission.camera.request();
+    if (status.isGranted) {
+      // 2. Open camera to take a picture
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.front,
 
-      // --- THESE ARE THE KEY CHANGES TO REDUCE FILE SIZE ---
-      
-      // Resize the image to a much more reasonable width.
-      // 640px is a good starting point for verification photos.
-      // It's large enough to be clear but small enough in file size.
-      maxWidth: 640, 
-      
-      // Compress the image to 80% of its original quality.
-      // This is often visually indistinguishable but saves a lot of space.
-      imageQuality: 80, 
+        // --- THESE ARE THE KEY CHANGES TO REDUCE FILE SIZE ---
 
-      // --- END OF KEY CHANGES ---
-    );
+        // Resize the image to a much more reasonable width.
+        // 640px is a good starting point for verification photos.
+        // It's large enough to be clear but small enough in file size.
+        maxWidth: 640,
 
-    if (pickedFile != null) {
-      // For debugging, let's check the new file size
-      final file = File(pickedFile.path);
-      final fileSize = await file.length();
-      print("Image captured. New file size: ${fileSize / 1024} KB");
+        // Compress the image to 80% of its original quality.
+        // This is often visually indistinguishable but saves a lot of space.
+        imageQuality: 80,
 
+        // --- END OF KEY CHANGES ---
+      );
+
+      if (pickedFile != null) {
+        // For debugging, let's check the new file size
+        final file = File(pickedFile.path);
+        final fileSize = await file.length();
+        print("Image captured. New file size: ${fileSize / 1024} KB");
+
+        setState(() {
+          _imageFile = file;
+          _currentStep = SignUpStep.pictureTaken;
+          _errorMessage = null;
+        });
+      }
+    } else {
       setState(() {
-        _imageFile = file;
-        _currentStep = SignUpStep.pictureTaken; 
-        _errorMessage = null; 
+        _errorMessage = "Camera permission is required to continue.";
       });
     }
-  } else {
-    setState(() {
-      _errorMessage = "Camera permission is required to continue.";
-    });
   }
-}
-
 
   Future<void> _verifyDetails() async {
     // ... (This method is correct, no changes needed)
@@ -143,23 +146,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       final String? token = await _ghanaCardService.generateToken();
       if (token == null) {
-        throw Exception("Failed to connect to the server. Please check your internet and try again.");
+        throw Exception(
+          "Failed to connect to the server. Please check your internet and try again.",
+        );
       }
-      final VerificationResult? result = await _ghanaCardService.verifyGhanaCard(
-        pin: _ghanacardController.text,
-        imageFile: _imageFile!,
-        token: token,
-      );
+      final VerificationResult? result = await _ghanaCardService
+          .verifyGhanaCard(
+            pin: _ghanacardController.text,
+            imageFile: _imageFile!,
+            token: token,
+          );
       if (result != null && result.isValid) {
         setState(() {
           _verificationResult = result;
           _firstNameController.text = result.firstName ?? 'N/A';
           _lastNameController.text = result.lastName ?? 'N/A';
+          _emailController.text = result.email ?? 'N/A';
+          _phoneNumberController.text = result.phoneNumber ?? 'N/A';
           _currentStep = SignUpStep.verificationSuccess;
           _isLoading = false;
         });
       } else {
-        throw Exception("Verification failed. The picture may be unclear or details may not match. Please take a new picture.");
+        throw Exception(
+          "Verification failed. The picture may be unclear or details may not match. Please take a new picture.",
+        );
       }
     } catch (e) {
       setState(() {
@@ -171,20 +181,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
- 
-  
   // --- THE MISPLACED METHOD HAS BEEN DELETED FROM HERE ---
-
 
   // --- UI HELPER METHODS ---
   String _getButtonText() {
     // ... (This method is correct, no changes needed)
     switch (_currentStep) {
-      case SignUpStep.initial: return 'Take Picture';
+      case SignUpStep.initial:
+        return 'Take Picture';
       case SignUpStep.pictureTaken:
-      case SignUpStep.verificationFailed: return 'Verify';
-      case SignUpStep.verifying: return 'Verifying...';
-      case SignUpStep.verificationSuccess: return 'Verified';
+      case SignUpStep.verificationFailed:
+        return 'Verify';
+      case SignUpStep.verifying:
+        return 'Verifying...';
+      case SignUpStep.verificationSuccess:
+        return 'Verified';
     }
   }
 
@@ -193,28 +204,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // The entire build method is correct and does not need any changes.
     // ... (your existing build method code)
     final size = MediaQuery.of(context).size;
-    final isPrimaryButtonDisabled = _currentStep == SignUpStep.verifying || _currentStep == SignUpStep.verificationSuccess;
+    final isPrimaryButtonDisabled =
+        _currentStep == SignUpStep.verifying ||
+        _currentStep == SignUpStep.verificationSuccess;
     final isNextButtonEnabled = _currentStep == SignUpStep.verificationSuccess;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.secondary,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              IconButton(onPressed: () => Navigator.pop(context), icon: Icon(FontAwesomeIcons.arrowLeft, size: size.width * 0.05)),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(FontAwesomeIcons.arrowLeft, size: size.width * 0.05),
+              ),
               const AuthHeader(
-              title: 'Create an Account',
-              subtitle: 'Welcome!',
-            ),
+                title: 'Create an Account',
+                subtitle: 'Welcome!',
+              ),
               //const SizedBox(height: 24),
-              const ProgressStepper(currentStep: 1), 
+              const ProgressStepper(currentStep: 1),
               const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: size.height * 0.03, horizontal: size.width * 0.05),
+                  padding: EdgeInsets.symmetric(
+                    vertical: size.height * 0.03,
+                    horizontal: size.width * 0.05,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.white,
                     borderRadius: BorderRadius.circular(12.0),
@@ -223,79 +242,150 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Personal Information', style: AppTheme.h2.copyWith(fontSize: 18)),
+                      Text(
+                        'Personal Information',
+                        style: AppTheme.h2.copyWith(fontSize: 18),
+                      ),
                       const SizedBox(height: 8),
-                      Text('Please enter your card number, take a picture, and click verify.'),
+                      Text(
+                        'Please enter your card number, take a picture, and click verify.',
+                      ),
                       const SizedBox(height: 24),
-                      Text('Ghana Card Number', style: AppTheme.bodyText.copyWith(fontWeight: FontWeight.w600)),
+                      Text(
+                        'Ghana Card Number',
+                        style: AppTheme.bodyText.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       const SizedBox(height: 8),
-                      CustomTextField(controller: _ghanacardController, hintText: 'GHA-12345678-90', icon: Icons.credit_card,  readOnly: false),
+                      CustomTextField(
+                        controller: _ghanacardController,
+                        hintText: 'GHA-12345678-90',
+                        icon: Icons.credit_card,
+                        readOnly: false,
+                      ),
                       const SizedBox(height: 24),
                       Center(
                         child: Container(
                           width: 280,
                           height: 180,
-                          decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(12.0), border: Border.all(color: Colors.grey.shade300)),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(12.0),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(11.0),
-                            child: _imageFile == null ? Image.asset('assets/images/ghana_card.png', fit: BoxFit.contain) : Image.file(_imageFile!, fit: BoxFit.cover),
+                            child:
+                                _imageFile == null
+                                    ? Image.asset(
+                                      'assets/images/ghana_card.png',
+                                      fit: BoxFit.contain,
+                                    )
+                                    : Image.file(
+                                      _imageFile!,
+                                      fit: BoxFit.cover,
+                                    ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
                       SizedBox(
-  width: double.infinity,
-  child: ElevatedButton(
-    // --- THIS IS THE KEY CHANGE ---
-    onPressed:
-        // First, check if the button should generally be disabled (e.g., during verification)
-        isPrimaryButtonDisabled
-            ? null
-            // If not, and if we are in the initial step, ALSO check if the PIN has been entered.
-            : (_currentStep == SignUpStep.initial && !_isPinEntered)
-                ? null // <-- Disable button if in initial step AND PIN is not entered
-                : _handlePrimaryButtonPress,
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          // --- THIS IS THE KEY CHANGE ---
+                          onPressed:
+                              // First, check if the button should generally be disabled (e.g., during verification)
+                              isPrimaryButtonDisabled
+                                  ? null
+                                  // If not, and if we are in the initial step, ALSO check if the PIN has been entered.
+                                  : (_currentStep == SignUpStep.initial &&
+                                      !_isPinEntered)
+                                  ? null // <-- Disable button if in initial step AND PIN is not entered
+                                  : _handlePrimaryButtonPress,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: _currentStep == SignUpStep.verificationSuccess ? Colors.green : const Color(0xFF2C3E50),
+                            backgroundColor:
+                                _currentStep == SignUpStep.verificationSuccess
+                                    ? Colors.green
+                                    : const Color(0xFF2C3E50),
                             padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
-                          child: _isLoading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3)) : Text(_getButtonText(), style: const TextStyle(fontSize: 16, color: Colors.white)),
+                          child:
+                              _isLoading
+                                  ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 3,
+                                    ),
+                                  )
+                                  : Text(
+                                    _getButtonText(),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                         ),
                       ),
                       if (_errorMessage != null)
                         Padding(
                           padding: const EdgeInsets.only(top: 16.0),
                           child: Center(
-                            child: Text(_errorMessage!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                            child: Text(
+                              _errorMessage!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
-                      if (_currentStep == SignUpStep.verificationSuccess && _verificationResult != null)
+                      if (_currentStep == SignUpStep.verificationSuccess &&
+                          _verificationResult != null)
                         _buildResultsView(),
                       const SizedBox(height: 16),
                       Align(
                         alignment: Alignment.centerRight,
                         child: ElevatedButton(
-                          onPressed: isNextButtonEnabled ? () {
-                            if (_verificationResult != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SignupReviewDetails(
-                                    verificationResult: _verificationResult!,
-                                    ghanaCardNumber: _ghanacardController.text,
-                                  ),
-                                ),
-                              );
-                            }
-                          } : null,
+                          onPressed:
+                              isNextButtonEnabled
+                                  ? () {
+                                    if (_verificationResult != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => SignupReviewDetails(
+                                                verificationResult:
+                                                    _verificationResult!,
+                                                ghanaCardNumber:
+                                                    _ghanacardController.text,
+                                              ),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                  : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF2C3E50),
                             disabledBackgroundColor: Colors.grey.shade400,
-                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                              horizontal: 24,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
-                          child: const Text('Next', style: TextStyle(color: Colors.white)),
+                          child: const Text(
+                            'Next',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ],
@@ -311,7 +401,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   // ... (Your _buildResultsView and _buildProgressStepper methods are correct and do not need changes)
-    Widget _buildResultsView() {
+  Widget _buildResultsView() {
     return Padding(
       padding: const EdgeInsets.only(top: 24.0),
       child: Column(
@@ -322,6 +412,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           _buildReadOnlyTextField("First Name", _firstNameController),
           const SizedBox(height: 16),
           _buildReadOnlyTextField("Last Name", _lastNameController),
+          const SizedBox(height: 16),
+          _buildReadOnlyTextField("Email", _emailController),
+          const SizedBox(height: 16),
+          _buildReadOnlyTextField("Phone Number", _phoneNumberController),
         ],
       ),
     );

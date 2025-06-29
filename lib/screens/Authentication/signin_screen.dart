@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/home.dart';
 import 'package:local_government_app/utils/app_theme.dart';
 import 'package:local_government_app/widgets/auth_header.dart';
 import 'package:local_government_app/widgets/components/buttons/primary_button.dart';
@@ -99,7 +100,10 @@ class _SignInState extends State<SignIn> {
                         PrimaryButton(
                           text: 'Login',
                           onPressed: () {
-                            // TODO: Implement login logic
+                           Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomePage()),
+                );
                           },
                         ),
                         const SizedBox(height: 24), // Spacing
