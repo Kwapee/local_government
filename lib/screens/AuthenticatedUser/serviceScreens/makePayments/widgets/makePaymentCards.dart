@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:local_government_app/utils/colors.dart';
 import 'package:local_government_app/utils/typography.dart';
 
-class CustomCard extends StatelessWidget {
+class CustomMakePaymentCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String icon;
-  final String number;
+  final Color containerColor;
   final String numDescription;
   final Color avatarColor;
 
-  const CustomCard({
+  const CustomMakePaymentCard({
     super.key,
     required this.title,
     required this.subtitle,
     required this.icon,
-    required this.number,
+    required this.containerColor,
     required this.numDescription,
     required this.avatarColor,
   });
@@ -32,7 +32,7 @@ class CustomCard extends StatelessWidget {
       height: size.height*0.15,
       padding: const EdgeInsets.all(12.0), // Consistent padding for all sides
       decoration: BoxDecoration(
-        color: ColorPack.lightGreen2,
+        color: containerColor,
         borderRadius: BorderRadius.circular(8), // A slightly larger radius is often visually pleasing
         boxShadow: [
           BoxShadow(
@@ -99,22 +99,7 @@ class CustomCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               // Green up-arrow icon example
-              Icon(
-                Icons.arrow_upward,
-                color: Colors.green.shade700,
-                size: 16,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                number,
-                style: tTextStyle500.copyWith(
-                  color: Colors.green.shade700,
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(width: 4),
-              // Use Expanded to handle potentially long descriptions
+
               Expanded(
                 child: Text(
                   numDescription,

@@ -1,8 +1,10 @@
 // import 'package:employer_self_service/utils/typography.dart'; // typography.dart was not used, can be removed if not needed elsewhere
 import 'package:flutter/material.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/services.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/widget/drawer.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/widget/homeCardPayment.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/widget/homeCards.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/widget/newsActivityCard.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/widget/recentActivityCard.dart';
 import 'package:local_government_app/utils/colors.dart';
 import 'package:local_government_app/utils/typography.dart';
@@ -45,7 +47,7 @@ class _HomePageState extends State<HomePage> {
 
     pages = [
       Home(scaffoldKey: _scaffoldKey),
-      //const Services(),
+      const GovernmentService(),
       //const Notifications(),
       //const Settings(),
     ];
@@ -199,11 +201,14 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // 1. Create the ScrollController for the recent activity list
   final ScrollController _activityScrollController = ScrollController();
+  final ScrollController _newsScrollController =
+      ScrollController(); // New controller for news
 
-  // 2. Dispose of the controller when the widget is removed
   @override
   void dispose() {
+    // 2. Dispose of BOTH controllers to prevent memory leaks.
     _activityScrollController.dispose();
+    _newsScrollController.dispose();
     super.dispose();
   }
 
@@ -295,7 +300,11 @@ class _HomeState extends State<Home> {
 
                       // In your _HomeState build method
                       Padding(
-                        padding:  EdgeInsets.only(top: size.height*0.05, left: size.width*0.01, right: size.width*0.01),
+                        padding: EdgeInsets.only(
+                          top: size.height * 0.03,
+                          left: size.width * 0.01,
+                          right: size.width * 0.01,
+                        ),
                         child: Container(
                           width: size.width * 0.95,
                           height: size.height * 0.30,
@@ -321,7 +330,7 @@ class _HomeState extends State<Home> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // --- START OF FIX ---
-                        
+
                               // 1. This Text widget is now a direct child of the Column,
                               //    so it will NOT be part of the scrollable area.
                               Padding(
@@ -337,7 +346,7 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                               const SizedBox(height: 16),
-                        
+
                               // 2. Wrap the scrollable part in Expanded. This makes it
                               //    take up all the remaining vertical space in the card.
                               Expanded(
@@ -359,7 +368,8 @@ class _HomeState extends State<Home> {
                                           description:
                                               "Payment of 120 processed successfully",
                                           date: "2 hours ago",
-                                          image: "assets/images/property_img.png",
+                                          image:
+                                              "assets/images/property_img.png",
                                         ),
                                         const SizedBox(height: 12),
                                         CustomRecentActivityCard(
@@ -385,6 +395,107 @@ class _HomeState extends State<Home> {
                                           date: "4 day ago",
                                           image:
                                               "assets/images/business_permit.png",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // --- END OF FIX ---
+                            ],
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: size.height * 0.03,
+                          left: size.width * 0.01,
+                          right: size.width * 0.01,
+                          bottom: size.height*0.03
+                        ),
+                        child: Container(
+                          width: size.width * 0.95,
+                          height: size.height * 0.30,
+                          padding: const EdgeInsets.fromLTRB(
+                            16,
+                            16,
+                            8,
+                            16,
+                          ), // Adjust padding for scrollbar
+                          decoration: BoxDecoration(
+                            color: ColorPack.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.7),
+                                blurRadius: 5.0,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          // The main layout is still a Column
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // --- START OF FIX ---
+
+                              // 1. This Text widget is now a direct child of the Column,
+                              //    so it will NOT be part of the scrollable area.
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 8.0,
+                                ), // Match inner padding
+                                child: Text(
+                                  "Local News & Events",
+                                  style: tTextStyleBold.copyWith(
+                                    color: ColorPack.black,
+                                    fontSize: size.width * 0.04,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+
+                              // 2. Wrap the scrollable part in Expanded. This makes it
+                              //    take up all the remaining vertical space in the card.
+                              Expanded(
+                                child: Scrollbar(
+                                  thumbVisibility: true,
+                                  thickness: 6.0,
+                                  radius: const Radius.circular(10),
+                                  controller: _newsScrollController,
+                                  child: SingleChildScrollView(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    controller: _newsScrollController,
+                                    // 3. This Column now ONLY contains the items you want to scroll.
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CustomNewsEventsCard(
+                                          title: "Annoucement",
+                                          description:
+                                              "New Digital Payment System launched. Easier\n and Faster way to pay municipal charges online.",
+                                          date: "March 19,2024",
+                                          image:
+                                              "assets/images/annoucement_img.png",
+                                        ),
+                                        const SizedBox(height: 12),
+                                        CustomNewsEventsCard(
+                                          title: "Community Clean-up Day",
+                                          description:
+                                              "Join us for the monthly clean up initiative",
+                                          date: "March 23,2024",
+                                          image:
+                                              "assets/images/cleanup_img.png",
+                                        ),
+                                        const SizedBox(height: 12),
+                                        CustomNewsEventsCard(
+                                          title: "Job Fair at Accra Sports Stadium",
+                                          description:
+                                              "Over 50 companies looking to hire local talent",
+                                          date: "July 23,2024",
+                                          image:
+                                              "assets/images/job-fair.png",
                                         ),
                                       ],
                                     ),
