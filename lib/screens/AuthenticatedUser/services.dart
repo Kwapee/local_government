@@ -81,7 +81,7 @@ class _GovernmentServiceState extends State<GovernmentService> {
                 ),
               ),
                Padding(
-                padding: EdgeInsets.only(top: size.height*0.03, left: size.width*0.02, right: size.width*0.02),
+                padding: EdgeInsets.only(top: size.height*0.01, left: size.width*0.02, right: size.width*0.02),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -116,7 +116,7 @@ class _GovernmentServiceState extends State<GovernmentService> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: size.height*0.03, left: size.width*0.02, right: size.width*0.02, bottom: size.height*0.03),
+                padding: EdgeInsets.only(top: size.height*0.01, left: size.width*0.02, right: size.width*0.02, bottom: size.height*0.03),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

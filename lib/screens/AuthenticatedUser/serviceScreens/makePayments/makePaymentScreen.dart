@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/makePayments/wastecollectionpayment.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/makePayments/widgets/makePaymentCards.dart';
 import 'package:local_government_app/utils/app_theme.dart';
 import 'package:local_government_app/utils/colors.dart';
 import 'package:local_government_app/utils/typography.dart';
 import 'package:local_government_app/widgets/expandlistwidget.dart';
-import 'package:local_government_app/widgets/scrollbar.dart';
+
+// --- NEW: A class to hold both the text and the icon for a service ---
+class ServiceItem {
+  final String text;
+  final IconData icon;
+  final Color color; // The new property to hold the icon's color
+
+  const ServiceItem({
+    required this.text,
+    required this.icon,
+    required this.color, // Add it to the constructor
+  });
+}
 
 class MakePayment extends StatefulWidget {
   const MakePayment({super.key});
@@ -14,16 +27,46 @@ class MakePayment extends StatefulWidget {
 }
 
 class _MakePaymentState extends State<MakePayment> {
-  final List<String> _serviceList = [
-    "Waste Management",
-    "Property Rate Tax",
-    "Rent(Assembly Property)",
-    "Business Permit",
-    "Bill & Signpost Permit",
+  // --- The list MUST be of type List<ServiceItem> ---
+  final List<ServiceItem> _serviceList = [
+    ServiceItem(
+      text: "Waste Management",
+      icon: Icons.delete_outline,
+      color: ColorPack.green,
+    ),
+    ServiceItem(
+      text: "Property Rate Tax",
+      icon: Icons.house_outlined,
+      color: ColorPack.discoverBlue,
+    ),
+    ServiceItem(
+      text: "Rent(Assembly Property)",
+      icon: Icons.store_mall_directory_outlined,
+      color: ColorPack.red,
+    ),
+    ServiceItem(
+      text: "Business Permit",
+      icon: Icons.business_center_outlined,
+      color: ColorPack.discoverYellow,
+    ),
+    ServiceItem(
+      text: "Bill & Signpost Permit",
+      icon: Icons.campaign_outlined,
+      color: ColorPack.iconOrange,
+    ),
   ];
 
-  String? _selectedServiceType;
+  // --- The selected item variable MUST be of type ServiceItem? ---
+  ServiceItem? _selectedServiceType;
   bool isServiceTypeExpanded = false;
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +97,7 @@ class _MakePaymentState extends State<MakePayment> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Your info cards...
+              // ... Your other widgets remain the same ...
               Padding(
                 padding: EdgeInsets.only(
                   top: size.height * 0.03,
@@ -153,20 +196,20 @@ class _MakePaymentState extends State<MakePayment> {
                         ),
                         SizedBox(height: size.height * 0.01),
                         _buildDropdown(
-                          hintText: 'Select Service Type',
+                          hintText: '',
                           selectedValue: _selectedServiceType,
                           items: _serviceList,
                           isExpanded: isServiceTypeExpanded,
+                          controller: _scrollController,
                           onToggle: (isExpanded) {
                             setState(() {
                               isServiceTypeExpanded = isExpanded;
                             });
                           },
-                          // This callback now handles setting the value AND closing the list
                           onSelect: (newValue) {
                             setState(() {
                               _selectedServiceType = newValue;
-                              isServiceTypeExpanded = false; // Close the dropdown on selection
+                              isServiceTypeExpanded = false;
                             });
                           },
                         ),
@@ -175,6 +218,8 @@ class _MakePaymentState extends State<MakePayment> {
                   ),
                 ),
               ),
+              WasteCollectionPaymentFields()
+              
             ],
           ),
         ),
@@ -182,53 +227,73 @@ class _MakePaymentState extends State<MakePayment> {
     );
   }
 
-  // --- REFACTORED AND CORRECTED DROPDOWN WIDGET ---
+  // --- The function signature MUST match the new types ---
+  // The function signature MUST match the new types
   Widget _buildDropdown({
     required String hintText,
-    required String? selectedValue,
-    required List<String> items,
+    required ServiceItem? selectedValue,
+    required List<ServiceItem> items,
     required bool isExpanded,
+    required ScrollController controller,
     required ValueChanged<bool> onToggle,
-    required ValueChanged<String?> onSelect,
+    required ValueChanged<ServiceItem?> onSelect,
   }) {
     return Column(
       children: [
-        // This is the main dropdown box that is always visible
         GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             onToggle(!isExpanded);
           },
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             decoration: BoxDecoration(
               color: AppTheme.white,
               border: Border.all(color: ColorPack.darkGray),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(5),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  selectedValue ?? hintText,
-                  style: tTextStyleRegular.copyWith(
-                    fontSize: 16,
-                    color:
-                        selectedValue == null ? Colors.grey.shade600 : ColorPack.black,
+                if (selectedValue == null)
+                  Text(
+                    hintText,
+                    style: tTextStyleRegular.copyWith(
+                      fontSize: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                  )
+                else
+                  Row(
+                    children: [
+                      // --- CHANGE #1: Use the selected item's color for the icon ---
+                      Icon(
+                        selectedValue.icon,
+                        color:
+                            selectedValue.color, // Use the specific item color
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        selectedValue.text,
+                        style: tTextStyleRegular.copyWith(
+                          fontSize: 16,
+                          color: ColorPack.black,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
                 Icon(
-                  isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                   color: ColorPack.black,
                 ),
               ],
             ),
           ),
         ),
-
-        // --- FIX #1: Conditionally build the list ---
-        // This ensures the list (and its scrollbar) are only in the widget tree
-        // when the dropdown is actually expanded.
         if (isExpanded)
           ExpandedSection(
             expand: isExpanded,
@@ -238,37 +303,53 @@ class _MakePaymentState extends State<MakePayment> {
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: MyScrollbar(
-                builder: (context, scrollController) => ListView.builder(
-                  padding: EdgeInsets.zero,
-                  controller: scrollController,
-                  shrinkWrap: true,
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    return ListTile(
-                      title: Text(
-                        item,
-                        style: tTextStyleRegular.copyWith(
-                          fontSize: 16,
-                          color: selectedValue == item
-                              ? Colors.white
-                              : ColorPack.darkGray,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 5, top: 5, bottom: 5),
+                child: Scrollbar(
+                  thumbVisibility: true,
+                  thickness: 6.0,
+                  radius: const Radius.circular(10),
+                  controller: controller,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(right: 10),
+                    controller: controller,
+                    shrinkWrap: true,
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      final bool isSelected = selectedValue == item;
+
+                      // --- CHANGE #2: Logic to determine the icon and text color ---
+                      // If selected, the icon is white. If not, it uses its own defined color.
+                      final Color iconColor =
+                          isSelected ? Colors.white : item.color;
+                      // Keep text color consistent for readability.
+                      final Color textColor =
+                          isSelected ? Colors.white : ColorPack.darkGray;
+
+                      return ListTile(
+                        leading: Icon(
+                          item.icon,
+                          color: iconColor,
+                        ), // Use the new iconColor
+                        title: Text(
+                          item.text,
+                          style: tTextStyleRegular.copyWith(
+                            fontSize: 16,
+                            color: textColor, // Use the new textColor
+                          ),
                         ),
-                      ),
-                      selected: selectedValue == item,
-                      selectedTileColor: ColorPack.iconOrange,
-                      // --- FIX #2: Simplified onTap ---
-                      // This now calls the onSelect callback from the parent,
-                      // which handles both setting the value and closing the list.
-                      onTap: () {
-                        onSelect(item);
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    );
-                  },
+                        selected: isSelected,
+                        //selectedTileColor: ColorPack.iconOrange,
+                        onTap: () {
+                          onSelect(item);
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
