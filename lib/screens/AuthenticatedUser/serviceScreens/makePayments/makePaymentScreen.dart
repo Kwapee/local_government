@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/makePayments/bill&signpost.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/makePayments/businessproperty.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/makePayments/paymenthistory.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/makePayments/propertyratetax.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/makePayments/rentassemblyproperty.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/makePayments/wastecollectionpayment.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/makePayments/widgets/makePaymentCards.dart';
-import 'package:local_government_app/utils/app_theme.dart';
+//import 'package:local_government_app/utils/app_theme.dart';
 import 'package:local_government_app/utils/colors.dart';
 import 'package:local_government_app/utils/typography.dart';
 import 'package:local_government_app/widgets/expandlistwidget.dart';
 
-// --- NEW: A class to hold both the text and the icon for a service ---
+// --- No changes to this class ---
 class ServiceItem {
   final String text;
   final IconData icon;
-  final Color color; // The new property to hold the icon's color
+  final Color color;
 
   const ServiceItem({
     required this.text,
     required this.icon,
-    required this.color, // Add it to the constructor
+    required this.color,
   });
 }
 
@@ -27,7 +32,7 @@ class MakePayment extends StatefulWidget {
 }
 
 class _MakePaymentState extends State<MakePayment> {
-  // --- The list MUST be of type List<ServiceItem> ---
+  // --- No changes to the service list or state variables ---
   final List<ServiceItem> _serviceList = [
     ServiceItem(
       text: "Waste Management",
@@ -56,7 +61,6 @@ class _MakePaymentState extends State<MakePayment> {
     ),
   ];
 
-  // --- The selected item variable MUST be of type ServiceItem? ---
   ServiceItem? _selectedServiceType;
   bool isServiceTypeExpanded = false;
 
@@ -66,6 +70,47 @@ class _MakePaymentState extends State<MakePayment> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  // --- NEW: Helper function to conditionally build the fields widget ---
+  Widget _buildSelectedServiceFields() {
+    // If no service is selected, return an empty widget
+    if (_selectedServiceType == null) {
+      return const SizedBox.shrink();
+    }
+
+    Widget fields;
+    // Use a switch statement on the selected service's text to determine which widget to show
+    switch (_selectedServiceType!.text) {
+      case "Waste Management":
+        fields = WasteCollectionPaymentFields();
+        break;
+      case "Property Rate Tax":
+        fields = PropertyRateTaxFields();
+        break;
+      case "Rent(Assembly Property)":
+        fields = AssemblyPropertyFields();
+        break;
+      case "Business Permit":
+        fields = BusinessPermitFields();
+        break;
+      case "Bill & Signpost Permit":
+        fields = BillSignpostFields();
+        break;
+      default:
+        // Return an empty widget if the selection is somehow unknown
+        fields = const SizedBox.shrink();
+    }
+
+    // By giving the widget a unique key, we help AnimatedSwitcher know
+    // that the widget has actually changed, ensuring the animation runs.
+    return Padding(
+      key: ValueKey(_selectedServiceType!.text),
+      padding: const EdgeInsets.only(
+        top: 16.0,
+      ), // Add some space above the fields
+      child: fields,
+    );
   }
 
   @override
@@ -94,141 +139,160 @@ class _MakePaymentState extends State<MakePayment> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ... Your other widgets remain the same ...
-              Padding(
-                padding: EdgeInsets.only(
-                  top: size.height * 0.03,
-                  right: size.width * 0.02,
-                  left: size.width * 0.02,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomMakePaymentCard(
-                      title: "Total Paid",
-                      subtitle: "GHC 200",
-                      icon: "assets/images/payment.png",
-                      numDescription: "This Year",
-                      avatarColor: ColorPack.discoverBlue,
-                      containerColor: ColorPack.white,
-                    ),
-                    SizedBox(width: size.width * 0.02),
-                    CustomMakePaymentCard(
-                      title: "Total Due",
-                      subtitle: "GHC 850",
-                      icon: "assets/images/pending-actions.png",
-                      numDescription: "This Month",
-                      avatarColor: ColorPack.red,
-                      containerColor: ColorPack.white,
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  top: size.height * 0.02,
-                  right: size.width * 0.02,
-                  left: size.width * 0.02,
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomMakePaymentCard(
-                      title: "Success Payments",
-                      subtitle: "8",
-                      icon: "assets/images/success_img.png",
-                      numDescription: "",
-                      avatarColor: ColorPack.green,
-                      containerColor: ColorPack.white,
-                    ),
-                    SizedBox(width: size.width * 0.02),
-                    CustomMakePaymentCard(
-                      title: "Outstanding Dues",
-                      subtitle: "3",
-                      icon: "assets/images/logout.png",
-                      numDescription: "",
-                      avatarColor: ColorPack.discoverYellow,
-                      containerColor: ColorPack.white,
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  top: size.height * 0.03,
-                  left: size.width * 0.02,
-                  right: size.width * 0.02,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: ColorPack.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.7),
-                        blurRadius: 5.0,
-                        offset: const Offset(0, 2),
+          child: Padding(
+            padding: EdgeInsets.only(bottom: size.height*0.03),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ... Your top cards remain the same ...
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: size.height * 0.03,
+                    right: size.width * 0.02,
+                    left: size.width * 0.02,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomMakePaymentCard(
+                        title: "Total Paid",
+                        subtitle: "₵ 200",
+                        icon: "assets/images/payment.png",
+                        numDescription: "This Year",
+                        avatarColor: ColorPack.discoverBlue,
+                        containerColor: ColorPack.white,
+                      ),
+                      SizedBox(width: size.width * 0.02),
+                      CustomMakePaymentCard(
+                        title: "Total Due",
+                        subtitle: "₵ 850",
+                        icon: "assets/images/pending-actions.png",
+                        numDescription: "This Month",
+                        avatarColor: ColorPack.red,
+                        containerColor: ColorPack.white,
                       ),
                     ],
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Make a Payment",
-                          style: tTextStyleBold.copyWith(
-                            color: ColorPack.black,
-                            fontSize: size.width * 0.05,
-                          ),
-                        ),
-                        SizedBox(height: size.height * 0.015),
-                        Text(
-                          "Select Service Type",
-                          style: tTextStyle500.copyWith(
-                            color: ColorPack.black,
-                            fontSize: size.width * 0.035,
-                          ),
-                        ),
-                        SizedBox(height: size.height * 0.01),
-                        _buildDropdown(
-                          hintText: '',
-                          selectedValue: _selectedServiceType,
-                          items: _serviceList,
-                          isExpanded: isServiceTypeExpanded,
-                          controller: _scrollController,
-                          onToggle: (isExpanded) {
-                            setState(() {
-                              isServiceTypeExpanded = isExpanded;
-                            });
-                          },
-                          onSelect: (newValue) {
-                            setState(() {
-                              _selectedServiceType = newValue;
-                              isServiceTypeExpanded = false;
-                            });
-                          },
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: size.height * 0.01,
+                    right: size.width * 0.02,
+                    left: size.width * 0.02,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomMakePaymentCard(
+                        title: "Success Payments",
+                        subtitle: "8",
+                        icon: "assets/images/success_img.png",
+                        numDescription: "",
+                        avatarColor: ColorPack.green,
+                        containerColor: ColorPack.white,
+                      ),
+                      SizedBox(width: size.width * 0.02),
+                      CustomMakePaymentCard(
+                        title: "Outstanding Dues",
+                        subtitle: "3",
+                        icon: "assets/images/logout.png",
+                        numDescription: "",
+                        avatarColor: ColorPack.discoverYellow,
+                        containerColor: ColorPack.white,
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: size.height * 0.03,
+                    left: size.width * 0.02,
+                    right: size.width * 0.02,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: ColorPack.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.7),
+                          blurRadius: 5.0,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Make a Payment",
+                            style: tTextStyleBold.copyWith(
+                              color: ColorPack.black,
+                              fontSize: size.width * 0.05,
+                            ),
+                          ),
+                          SizedBox(height: size.height * 0.015),
+                          Text(
+                            "Select Service Type",
+                            style: tTextStyle500.copyWith(
+                              color: ColorPack.black,
+                              fontSize: size.width * 0.035,
+                            ),
+                          ),
+                          SizedBox(height: size.height * 0.01),
+                          _buildDropdown(
+                            hintText: 'Choose a payment type', // Added hint text
+                            selectedValue: _selectedServiceType,
+                            items: _serviceList,
+                            isExpanded: isServiceTypeExpanded,
+                            controller: _scrollController,
+                            onToggle: (isExpanded) {
+                              setState(() {
+                                isServiceTypeExpanded = isExpanded;
+                              });
+                            },
+                            onSelect: (newValue) {
+                              setState(() {
+                                _selectedServiceType = newValue;
+                                isServiceTypeExpanded = false;
+                              });
+                            },
+                          ),
+            
+                          // --- MODIFIED: Use AnimatedSwitcher to show fields with a fade effect ---
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              WasteCollectionPaymentFields()
-              
-            ],
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (Widget child, Animation<double> animation) {
+                    // Use a fade transition for a smooth appearance
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                  // The helper function determines which widget to show
+                  child: _buildSelectedServiceFields(),
+                ),
+                PaymentHistory()
+            
+                // --- DELETED: The static list of fields is no longer needed here ---
+                // WasteCollectionPaymentFields()
+                // PropertyRateTaxFields()
+                // AssemblyPropertyFields()
+                // BusinessPermitFields()
+                // BillSignpostFields()
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  // --- The function signature MUST match the new types ---
-  // The function signature MUST match the new types
+  // --- No changes to the _buildDropdown function ---
   Widget _buildDropdown({
     required String hintText,
     required ServiceItem? selectedValue,
@@ -238,6 +302,7 @@ class _MakePaymentState extends State<MakePayment> {
     required ValueChanged<bool> onToggle,
     required ValueChanged<ServiceItem?> onSelect,
   }) {
+    // ... This function remains exactly the same as in your original code ...
     return Column(
       children: [
         GestureDetector(
@@ -249,7 +314,7 @@ class _MakePaymentState extends State<MakePayment> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             decoration: BoxDecoration(
-              color: AppTheme.white,
+              color: ColorPack.white,
               border: Border.all(color: ColorPack.darkGray),
               borderRadius: BorderRadius.circular(5),
             ),
@@ -267,11 +332,9 @@ class _MakePaymentState extends State<MakePayment> {
                 else
                   Row(
                     children: [
-                      // --- CHANGE #1: Use the selected item's color for the icon ---
                       Icon(
                         selectedValue.icon,
-                        color:
-                            selectedValue.color, // Use the specific item color
+                        color: selectedValue.color,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -319,24 +382,18 @@ class _MakePaymentState extends State<MakePayment> {
                       final item = items[index];
                       final bool isSelected = selectedValue == item;
 
-                      // --- CHANGE #2: Logic to determine the icon and text color ---
-                      // If selected, the icon is white. If not, it uses its own defined color.
                       final Color iconColor =
                           isSelected ? Colors.white : item.color;
-                      // Keep text color consistent for readability.
                       final Color textColor =
                           isSelected ? Colors.white : ColorPack.darkGray;
 
                       return ListTile(
-                        leading: Icon(
-                          item.icon,
-                          color: iconColor,
-                        ), // Use the new iconColor
+                        leading: Icon(item.icon, color: iconColor),
                         title: Text(
                           item.text,
                           style: tTextStyleRegular.copyWith(
                             fontSize: 16,
-                            color: textColor, // Use the new textColor
+                            color: textColor,
                           ),
                         ),
                         selected: isSelected,

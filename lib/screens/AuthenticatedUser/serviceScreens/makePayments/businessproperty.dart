@@ -6,17 +6,15 @@ import 'package:local_government_app/widgets/components/buttons/primary_button.d
 import 'package:local_government_app/widgets/components/inputfields/custom_field.dart';
 import 'package:local_government_app/widgets/expandlistwidget.dart';
 
-class WasteCollectionPaymentFields extends StatefulWidget {
-  const WasteCollectionPaymentFields({super.key});
+class BusinessPermitFields extends StatefulWidget {
+  const BusinessPermitFields({super.key});
 
   @override
-  State<WasteCollectionPaymentFields> createState() =>
-      _WasteCollectionPaymentFieldsState();
+  State<BusinessPermitFields> createState() => _BusinessPermitFieldsState();
 }
 
-class _WasteCollectionPaymentFieldsState
-    extends State<WasteCollectionPaymentFields> {
-  TextEditingController houseNumberController = TextEditingController();
+class _BusinessPermitFieldsState extends State<BusinessPermitFields> {
+  TextEditingController businessNameController = TextEditingController();
   TextEditingController amountController = TextEditingController();
 
   bool _obscureText = true;
@@ -27,15 +25,25 @@ class _WasteCollectionPaymentFieldsState
     "Bank Transfer",
   ];
 
+  final List<String> _businessTypeList = [
+    "Retail Shop",
+    "Restaurant",
+    "Service Provider",
+    "Other"
+  ];
+
   // --- The selected item variable MUST be of type ServiceItem? ---
   String? _selectedPaymentType;
+  String? _selectedBusinessType;
   bool isPaymentTypeExpanded = false;
+  bool isBusinessTypeExpanded = false;
 
   final ScrollController _scrollController = ScrollController();
+   final ScrollController _scrollBusinessTypeController = ScrollController();
 
   @override
   void dispose() {
-    houseNumberController.dispose();
+    businessNameController.dispose();
     amountController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -48,8 +56,8 @@ class _WasteCollectionPaymentFieldsState
       padding: EdgeInsets.only(
         right: size.width * 0.02,
         left: size.width * 0.02,
-        top: size.height * 0.01,
-        //bottom: size.height * 0.03,
+        top: size.height * 0.02,
+       // bottom: size.height * 0.03,
       ),
       child: Container(
         decoration: BoxDecoration(
@@ -77,13 +85,13 @@ class _WasteCollectionPaymentFieldsState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    Icons.delete_outline,
-                    color: ColorPack.green,
+                    Icons.store_mall_directory_outlined,
+                    color: ColorPack.red,
                     size: size.width * 0.06,
                   ),
                   SizedBox(width: size.width * 0.03),
                   Text(
-                    "Waste Collection Payment",
+                    "Business Permit Payment",
                     style: tTextStyleBold.copyWith(
                       color: ColorPack.black,
                       fontSize: size.width * 0.04,
@@ -93,15 +101,42 @@ class _WasteCollectionPaymentFieldsState
               ),
               SizedBox(height: size.height * 0.03),
               CustomInputField(
-                controller: houseNumberController,
-                label: "House Number",
+                controller: businessNameController,
+                label: "Business Name",
                 labelColor: ColorPack.black,
-                placeholder: "Enter your house number",
+                placeholder: "Enter your business name",
                 height: 40,
                 onTextChanged: (String str) {},
                 textColor: ColorPack.black,
                 obscureText: _obscureText,
                 readOnly: false,
+              ),
+              SizedBox(height: size.height * 0.01),
+               Text(
+                "Business Type",
+                style: tTextStyle600.copyWith(
+                  color: ColorPack.black,
+                  fontSize: size.width * 0.04,
+                ),
+              ),
+              SizedBox(height: size.height * 0.005),
+              _buildDropdown(
+                hintText: 'Select business type',
+                selectedValue: _selectedPaymentType,
+                items: _serviceList,
+                isExpanded: isPaymentTypeExpanded,
+                controller: _scrollController,
+                onToggle: (isExpanded) {
+                  setState(() {
+                    isPaymentTypeExpanded = isExpanded;
+                  });
+                },
+                onSelect: (newValue) {
+                  setState(() {
+                    _selectedPaymentType = newValue;
+                    isPaymentTypeExpanded = false;
+                  });
+                },
               ),
               SizedBox(height: size.height * 0.01),
               CustomInputField(
@@ -126,23 +161,23 @@ class _WasteCollectionPaymentFieldsState
               SizedBox(height: size.height * 0.005),
               _buildDropdown(
                 hintText: 'Select payment method',
-                selectedValue: _selectedPaymentType,
-                items: _serviceList,
-                isExpanded: isPaymentTypeExpanded,
-                controller: _scrollController,
+                selectedValue: _selectedBusinessType,
+                items: _businessTypeList,
+                isExpanded: isBusinessTypeExpanded,
+                controller: _scrollBusinessTypeController,
                 onToggle: (isExpanded) {
                   setState(() {
-                    isPaymentTypeExpanded = isExpanded;
+                    isBusinessTypeExpanded = isExpanded;
                   });
                 },
                 onSelect: (newValue) {
                   setState(() {
-                    _selectedPaymentType = newValue;
-                    isPaymentTypeExpanded = false;
+                    _selectedBusinessType = newValue;
+                    isBusinessTypeExpanded = false;
                   });
                 },
               ),
-              SizedBox(height: size.height*0.04),
+              SizedBox(height: size.height * 0.04),
               PrimaryButton(
                 onPressed: () {},
                 text: "Proceed to Payment",

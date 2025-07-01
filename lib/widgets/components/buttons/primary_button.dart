@@ -5,11 +5,13 @@ import 'package:local_government_app/utils/app_theme.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
+  final Color buttonColor;
   final VoidCallback onPressed;
 
   const PrimaryButton({
     super.key,
     required this.text,
+    required this.buttonColor,
     required this.onPressed,
     
   });
@@ -22,7 +24,7 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppTheme.buttonBackground,
+          backgroundColor: buttonColor,
           foregroundColor: AppTheme.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.0),

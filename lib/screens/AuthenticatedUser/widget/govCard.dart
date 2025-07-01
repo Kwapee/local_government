@@ -51,8 +51,8 @@ class CustomGovServiceCard extends StatelessWidget {
             ),
             child: Image.asset(
               image,
-              width: 28,
-              height: 28,
+              width: 15,
+              height: 15,
               // You can also tint the icon with the passed color
             ),
           ),

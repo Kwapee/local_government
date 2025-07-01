@@ -6,17 +6,15 @@ import 'package:local_government_app/widgets/components/buttons/primary_button.d
 import 'package:local_government_app/widgets/components/inputfields/custom_field.dart';
 import 'package:local_government_app/widgets/expandlistwidget.dart';
 
-class WasteCollectionPaymentFields extends StatefulWidget {
-  const WasteCollectionPaymentFields({super.key});
+class BillSignpostFields extends StatefulWidget {
+  const BillSignpostFields({super.key});
 
   @override
-  State<WasteCollectionPaymentFields> createState() =>
-      _WasteCollectionPaymentFieldsState();
+  State<BillSignpostFields> createState() => _BillSignpostFieldsState();
 }
 
-class _WasteCollectionPaymentFieldsState
-    extends State<WasteCollectionPaymentFields> {
-  TextEditingController houseNumberController = TextEditingController();
+class _BillSignpostFieldsState extends State<BillSignpostFields> {
+  TextEditingController signLocationController = TextEditingController();
   TextEditingController amountController = TextEditingController();
 
   bool _obscureText = true;
@@ -27,15 +25,24 @@ class _WasteCollectionPaymentFieldsState
     "Bank Transfer",
   ];
 
+  final List<String> _signSizeList = [
+    "Small (1x2ft)",
+    "Medium (2x3ft)",
+    "Large (3x4ft)",
+  ];
+
   // --- The selected item variable MUST be of type ServiceItem? ---
   String? _selectedPaymentType;
+  String? _selectedSignSize;
   bool isPaymentTypeExpanded = false;
+  bool isSignSizeExpanded = false;
 
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollSignSizeController = ScrollController();
 
   @override
   void dispose() {
-    houseNumberController.dispose();
+    signLocationController.dispose();
     amountController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -48,7 +55,7 @@ class _WasteCollectionPaymentFieldsState
       padding: EdgeInsets.only(
         right: size.width * 0.02,
         left: size.width * 0.02,
-        top: size.height * 0.01,
+        top: size.height * 0.02,
         //bottom: size.height * 0.03,
       ),
       child: Container(
@@ -77,13 +84,13 @@ class _WasteCollectionPaymentFieldsState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    Icons.delete_outline,
-                    color: ColorPack.green,
+                    Icons.campaign_outlined,
+                    color: ColorPack.iconOrange,
                     size: size.width * 0.06,
                   ),
                   SizedBox(width: size.width * 0.03),
                   Text(
-                    "Waste Collection Payment",
+                    "Bill & Signpost Permit Payment",
                     style: tTextStyleBold.copyWith(
                       color: ColorPack.black,
                       fontSize: size.width * 0.04,
@@ -93,15 +100,42 @@ class _WasteCollectionPaymentFieldsState
               ),
               SizedBox(height: size.height * 0.03),
               CustomInputField(
-                controller: houseNumberController,
-                label: "House Number",
+                controller: signLocationController,
+                label: "Signpost Location",
                 labelColor: ColorPack.black,
-                placeholder: "Enter your house number",
+                placeholder: "Enter signpost location",
                 height: 40,
                 onTextChanged: (String str) {},
                 textColor: ColorPack.black,
                 obscureText: _obscureText,
                 readOnly: false,
+              ),
+              SizedBox(height: size.height * 0.01),
+              Text(
+                "Sign Size",
+                style: tTextStyle600.copyWith(
+                  color: ColorPack.black,
+                  fontSize: size.width * 0.04,
+                ),
+              ),
+              SizedBox(height: size.height * 0.005),
+              _buildDropdown(
+                hintText: 'Select sign size',
+                selectedValue: _selectedPaymentType,
+                items: _serviceList,
+                isExpanded: isPaymentTypeExpanded,
+                controller: _scrollController,
+                onToggle: (isExpanded) {
+                  setState(() {
+                    isPaymentTypeExpanded = isExpanded;
+                  });
+                },
+                onSelect: (newValue) {
+                  setState(() {
+                    _selectedPaymentType = newValue;
+                    isPaymentTypeExpanded = false;
+                  });
+                },
               ),
               SizedBox(height: size.height * 0.01),
               CustomInputField(
@@ -126,23 +160,23 @@ class _WasteCollectionPaymentFieldsState
               SizedBox(height: size.height * 0.005),
               _buildDropdown(
                 hintText: 'Select payment method',
-                selectedValue: _selectedPaymentType,
-                items: _serviceList,
-                isExpanded: isPaymentTypeExpanded,
-                controller: _scrollController,
+                selectedValue: _selectedSignSize,
+                items: _signSizeList,
+                isExpanded: isSignSizeExpanded,
+                controller: _scrollSignSizeController,
                 onToggle: (isExpanded) {
                   setState(() {
-                    isPaymentTypeExpanded = isExpanded;
+                    isSignSizeExpanded = isExpanded;
                   });
                 },
                 onSelect: (newValue) {
                   setState(() {
-                    _selectedPaymentType = newValue;
-                    isPaymentTypeExpanded = false;
+                    _selectedSignSize = newValue;
+                    isSignSizeExpanded = false;
                   });
                 },
               ),
-              SizedBox(height: size.height*0.04),
+              SizedBox(height: size.height * 0.04),
               PrimaryButton(
                 onPressed: () {},
                 text: "Proceed to Payment",

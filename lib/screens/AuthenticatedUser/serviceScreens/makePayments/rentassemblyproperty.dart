@@ -6,17 +6,16 @@ import 'package:local_government_app/widgets/components/buttons/primary_button.d
 import 'package:local_government_app/widgets/components/inputfields/custom_field.dart';
 import 'package:local_government_app/widgets/expandlistwidget.dart';
 
-class WasteCollectionPaymentFields extends StatefulWidget {
-  const WasteCollectionPaymentFields({super.key});
+class AssemblyPropertyFields extends StatefulWidget {
+  const AssemblyPropertyFields({super.key});
 
   @override
-  State<WasteCollectionPaymentFields> createState() =>
-      _WasteCollectionPaymentFieldsState();
+  State<AssemblyPropertyFields> createState() => _AssemblyPropertyFieldsState();
 }
 
-class _WasteCollectionPaymentFieldsState
-    extends State<WasteCollectionPaymentFields> {
-  TextEditingController houseNumberController = TextEditingController();
+class _AssemblyPropertyFieldsState extends State<AssemblyPropertyFields> {
+  TextEditingController propertyUnitController = TextEditingController();
+  TextEditingController tenantIDController = TextEditingController();
   TextEditingController amountController = TextEditingController();
 
   bool _obscureText = true;
@@ -35,7 +34,8 @@ class _WasteCollectionPaymentFieldsState
 
   @override
   void dispose() {
-    houseNumberController.dispose();
+    propertyUnitController.dispose();
+    tenantIDController.dispose();
     amountController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -48,7 +48,7 @@ class _WasteCollectionPaymentFieldsState
       padding: EdgeInsets.only(
         right: size.width * 0.02,
         left: size.width * 0.02,
-        top: size.height * 0.01,
+        top: size.height * 0.02,
         //bottom: size.height * 0.03,
       ),
       child: Container(
@@ -77,13 +77,13 @@ class _WasteCollectionPaymentFieldsState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    Icons.delete_outline,
-                    color: ColorPack.green,
+                    Icons.business_center_outlined,
+                    color: ColorPack.discoverYellow,
                     size: size.width * 0.06,
                   ),
                   SizedBox(width: size.width * 0.03),
                   Text(
-                    "Waste Collection Payment",
+                    "Rent(Assembly Property) Payment",
                     style: tTextStyleBold.copyWith(
                       color: ColorPack.black,
                       fontSize: size.width * 0.04,
@@ -93,10 +93,22 @@ class _WasteCollectionPaymentFieldsState
               ),
               SizedBox(height: size.height * 0.03),
               CustomInputField(
-                controller: houseNumberController,
-                label: "House Number",
+                controller: propertyUnitController,
+                label: "Property Unit",
                 labelColor: ColorPack.black,
-                placeholder: "Enter your house number",
+                placeholder: "e.g. Block A, Unit 12",
+                height: 40,
+                onTextChanged: (String str) {},
+                textColor: ColorPack.black,
+                obscureText: _obscureText,
+                readOnly: false,
+              ),
+              SizedBox(height: size.height * 0.01),
+              CustomInputField(
+                controller: tenantIDController,
+                label: "Property ID",
+                labelColor: ColorPack.black,
+                placeholder: "Enter your tenant ID",
                 height: 40,
                 onTextChanged: (String str) {},
                 textColor: ColorPack.black,
@@ -142,7 +154,7 @@ class _WasteCollectionPaymentFieldsState
                   });
                 },
               ),
-              SizedBox(height: size.height*0.04),
+              SizedBox(height: size.height * 0.04),
               PrimaryButton(
                 onPressed: () {},
                 text: "Proceed to Payment",

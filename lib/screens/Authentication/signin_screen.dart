@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/home.dart';
 import 'package:local_government_app/utils/app_theme.dart';
+import 'package:local_government_app/utils/colors.dart';
 import 'package:local_government_app/widgets/auth_header.dart';
 import 'package:local_government_app/widgets/components/buttons/primary_button.dart';
 import 'package:local_government_app/widgets/components/inputfields/custom_text_field.dart';
@@ -99,6 +100,7 @@ class _SignInState extends State<SignIn> {
                         const SizedBox(height: 24),
                         PrimaryButton(
                           text: 'Login',
+                          buttonColor: ColorPack.red,
                           onPressed: () {
                            Navigator.push(
                   context,

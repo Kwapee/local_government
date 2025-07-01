@@ -321,6 +321,7 @@ Widget _buildDropdown({
                         // --- 4. FINAL CALL-TO-ACTION BUTTON ---
                         PrimaryButton(
                           text: 'Create Account',
+                          buttonColor: ColorPack.red,
                           onPressed: () {
                             Navigator.push(
                               context,

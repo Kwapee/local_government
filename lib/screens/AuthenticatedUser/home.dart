@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
         width: size.width * 0.85,
         child: const CustomDrawer(),
       ), // Added Drawer
-      backgroundColor: ColorPack.white,
+      //backgroundColor: ColorPack.white,
       body:
           _isLoading
               ? Center(
@@ -279,7 +279,7 @@ class _HomeState extends State<Home> {
                               children: [
                                 CustomCardPayment(
                                   title: 'Payments Made',
-                                  subtitle: 'GHC 200',
+                                  subtitle: '₵200',
                                   icon: 'assets/images/payment.png',
                                   numDescription: 'This Month',
                                   avatarColor: ColorPack.badge2,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/addproperty/view_addedProperty.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/serviceScreens/makePayments/makePaymentScreen.dart';
 import 'package:local_government_app/screens/AuthenticatedUser/widget/govCard.dart';
 import 'package:local_government_app/utils/colors.dart';
@@ -43,7 +44,11 @@ class _GovernmentServiceState extends State<GovernmentService> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.only(top: size.height*0.02, left: size.width*0.02, right: size.width*0.02),
+                padding: EdgeInsets.only(
+                  top: size.height * 0.02,
+                  left: size.width * 0.02,
+                  right: size.width * 0.02,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -58,13 +63,50 @@ class _GovernmentServiceState extends State<GovernmentService> {
                         Icons.arrow_forward_ios,
                         size: 10,
                         color: ColorPack.white,
-                      ), onTap: () {   Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MakePayment()),
-                );},
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MakePayment(),
+                          ),
+                        );
+                      },
                     ),
-                    SizedBox(width: size.width*0.02,),
-                     CustomGovServiceCard(
+                    SizedBox(width: size.width * 0.02),
+                    CustomGovServiceCard(
+                      title: "Add Property",
+                      image: "assets/images/add_property.png",
+                      color: ColorPack.discoverBlue.withOpacity(0.15),
+                      description:
+                          "Add properties to be able to pay property related bills.",
+                      buttonTitle: "Add Property",
+                      buttonColor: ColorPack.discoverYellow.withOpacity(0.7),
+                      buttonIcon: Icon(
+                        Icons.add,
+                        size: 10,
+                        color: ColorPack.white,
+                      ),
+                      onTap: () {Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ViewAddedProperty(),
+                          ),
+                        );},
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  top: size.height * 0.01,
+                  left: size.width * 0.02,
+                  right: size.width * 0.02,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomGovServiceCard(
                       title: "Request Services",
                       image: "assets/images/request_services.png",
                       color: ColorPack.red.withOpacity(0.3),
@@ -75,16 +117,54 @@ class _GovernmentServiceState extends State<GovernmentService> {
                         Icons.add,
                         size: 10,
                         color: ColorPack.white,
-                      ), onTap: () {  },
+                      ),
+                      onTap: () {},
+                    ),
+
+                    SizedBox(width: size.width * 0.02),
+                    CustomGovServiceCard(
+                      title: "Add Business",
+                      image: "assets/images/add_business.png",
+                      color: ColorPack.iconBeige,
+                      description: "Add business to be able to pay business related bills",
+                      buttonTitle: "Add business",
+                      buttonColor: ColorPack.red.withOpacity(0.9),
+                      buttonIcon: Icon(
+                        Icons.add,
+                        size: 10,
+                        color: ColorPack.white,
+                      ),
+                      onTap: () {},
                     ),
                   ],
                 ),
               ),
-               Padding(
-                padding: EdgeInsets.only(top: size.height*0.01, left: size.width*0.02, right: size.width*0.02),
+              Padding(
+                padding: EdgeInsets.only(
+                  top: size.height * 0.01,
+                  left: size.width * 0.02,
+                  right: size.width * 0.02,
+                  //bottom: size.height * 0.03,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    CustomGovServiceCard(
+                      title: "Manage Account",
+                      image: "assets/images/manage-accounts.png",
+                      color: ColorPack.iconBeige,
+                      description: "Profile,settings & preferences",
+                      buttonTitle: "Manage my account",
+                      buttonColor: ColorPack.darkGray.withOpacity(0.9),
+                      buttonIcon: Icon(
+                        Icons.list,
+                        size: 10,
+                        color: ColorPack.white,
+                      ),
+                      onTap: () {},
+                    ),
+
+                    SizedBox(width: size.width * 0.02),
                     CustomGovServiceCard(
                       title: "Report Incidents",
                       image: "assets/images/incident_img.png",
@@ -96,27 +176,19 @@ class _GovernmentServiceState extends State<GovernmentService> {
                         Icons.save,
                         size: 10,
                         color: ColorPack.white,
-                      ), onTap: () {  },
-                    ),
-                    SizedBox(width: size.width*0.02,),
-                     CustomGovServiceCard(
-                      title: "Manage Account",
-                      image: "assets/images/manage-accounts.png",
-                      color: ColorPack.iconBeige,
-                      description: "Profile,settings & preferences",
-                      buttonTitle: "Manage my account",
-                      buttonColor: ColorPack.darkGray.withOpacity(0.9),
-                      buttonIcon: Icon(
-                        Icons.list,
-                        size: 10,
-                        color: ColorPack.white,
-                      ), onTap: () {  },
+                      ),
+                      onTap: () {},
                     ),
                   ],
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: size.height*0.01, left: size.width*0.02, right: size.width*0.02, bottom: size.height*0.03),
+                padding: EdgeInsets.only(
+                  top: size.height * 0.01,
+                  left: size.width * 0.02,
+                  right: size.width * 0.02,
+                  bottom: size.height * 0.03,
+                ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -131,10 +203,11 @@ class _GovernmentServiceState extends State<GovernmentService> {
                         Icons.arrow_forward_ios,
                         size: 10,
                         color: ColorPack.white,
-                      ), onTap: () {  },
+                      ),
+                      onTap: () {},
                     ),
-                    SizedBox(width: size.width*0.02,),
-                     CustomGovServiceCard(
+                    SizedBox(width: size.width * 0.02),
+                    CustomGovServiceCard(
                       title: "Service Tracker",
                       image: "assets/images/tracker_img.png",
                       color: ColorPack.iconBeige,
@@ -145,7 +218,8 @@ class _GovernmentServiceState extends State<GovernmentService> {
                         Icons.bar_chart,
                         size: 10,
                         color: ColorPack.white,
-                      ), onTap: () {  },
+                      ),
+                      onTap: () {},
                     ),
                   ],
                 ),
