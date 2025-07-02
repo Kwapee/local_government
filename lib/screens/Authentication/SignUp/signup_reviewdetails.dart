@@ -170,7 +170,7 @@ Widget _buildDropdown({
                     // Set the selected state to highlight the correct item
                     selected: selectedValue == item,
                     // Define the color for the highlight
-                    selectedTileColor: ColorPack.iconOrange,
+                    //selectedTileColor: ColorPack.iconOrange,
                     // The onTap action now handles the selection
                     onTap: () {
                       onSelect(item); // This calls the setState logic from the parent
