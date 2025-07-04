@@ -19,6 +19,9 @@ class _AddPropertyState extends State<AddProperty> {
   TextEditingController propertyCodeController = TextEditingController();
   TextEditingController postaddressController = TextEditingController();
   TextEditingController amountController = TextEditingController();
+  TextEditingController propertyAddress1Controller = TextEditingController();
+  TextEditingController propertyAddress2Controller = TextEditingController();
+  TextEditingController numberUnitController = TextEditingController();
 
   bool _obscureText = true;
 
@@ -27,16 +30,24 @@ class _AddPropertyState extends State<AddProperty> {
   // Lists to hold the data for the dropdowns
   List<String> _regionsList = [];
   List<String> _assembliesForSelectedRegion = [];
+  List<String> _propertyTypeList = [];
+  List<String> _propertyTierList = [];
 
   // State for selected values
   String? _selectedRegion;
   String? _selectedAssembly;
+  String? _selectedPropertyType;
+  String? _selectedPropertyTier;
 
   bool isRegionStrechedDropDown = false;
   bool isAssemblyStrechedDropDown = false;
+  bool isPropertyTypeStrechedDropDown = false;
+  bool isPropertyTierStrechedDropDown = false;
 
   String RegionType = 'Select Region';
   String AssemblyType = 'Select Assembly';
+  String PropertyType = 'Select Property Type';
+  String PropertyTier = 'Select Property Tier';
 
   final List<String> _serviceList = [
     "Mobile Money",
@@ -51,6 +62,8 @@ class _AddPropertyState extends State<AddProperty> {
   final ScrollController _scrollController = ScrollController();
   final ScrollController _regionscrollController = ScrollController();
   final ScrollController _assemblyscrollController = ScrollController();
+  final ScrollController _propertyTypescrollController = ScrollController();
+  final ScrollController _propertyTierscrollController = ScrollController();
 
   @override
   void dispose() {
@@ -58,6 +71,10 @@ class _AddPropertyState extends State<AddProperty> {
     postaddressController.dispose();
     amountController.dispose();
     _scrollController.dispose();
+    _assemblyscrollController.dispose();
+    propertyAddress1Controller.dispose();
+    propertyAddress2Controller.dispose();
+    numberUnitController.dispose();
     super.dispose();
   }
 
@@ -128,12 +145,12 @@ class _AddPropertyState extends State<AddProperty> {
                         controller: propertyCodeController,
                         label: 'Property Code',
                         labelColor: ColorPack.darkGray.withOpacity(0.7),
-                        placeholder: 'Enter Property Oode',
+                        placeholder: 'Enter Property Code',
                         height: 40,
                         onTextChanged: (String str) {},
                         textColor: ColorPack.black,
                         obscureText: _obscureText,
-                        readOnly: false,
+                        readOnly: true,
                       ),
                       SizedBox(height: size.width * 0.03),
                       CustomInputField(
@@ -150,7 +167,7 @@ class _AddPropertyState extends State<AddProperty> {
                       SizedBox(height: size.width * 0.03),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             "Region Located In",
@@ -159,6 +176,7 @@ class _AddPropertyState extends State<AddProperty> {
                               color: ColorPack.darkGray.withOpacity(0.7),
                             ),
                           ),
+                          SizedBox(width: size.width * 0.13),
                           Text(
                             "Assembly Located In",
                             style: tTextStyle600.copyWith(
@@ -168,55 +186,172 @@ class _AddPropertyState extends State<AddProperty> {
                           ),
                         ],
                       ),
+                      SizedBox(height: size.width * 0.01),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildDropdown(
-                            hintText: 'Select Region',
-                            selectedValue: _selectedRegion,
-                            items: _regionsList,
-                            isExpanded: isRegionStrechedDropDown,
-                            onToggle: (isExpanded) {
-                              setState(() {
-                                isRegionStrechedDropDown = isExpanded;
-                                isAssemblyStrechedDropDown =
-                                    false; // Close other dropdown
-                              });
-                            },
-                            onSelect: (newValue) {
-                              setState(() {
-                                _selectedRegion = newValue;
-                                _selectedAssembly =
-                                    null; // IMPORTANT: Reset assembly when region changes
-                                _assembliesForSelectedRegion =
-                                    List<String>.from(
-                                      regionsAndAssembliesData[newValue!] ?? [],
-                                    );
-                                isRegionStrechedDropDown = false;
-                              });
-                            },
-                            controller: _regionscrollController,
+                          Expanded(
+                            child: _buildDropdown(
+                              hintText: 'Select Region',
+                              selectedValue: _selectedRegion,
+                              items: _regionsList,
+                              isExpanded: isRegionStrechedDropDown,
+                              onToggle: (isExpanded) {
+                                setState(() {
+                                  isRegionStrechedDropDown = isExpanded;
+                                  isAssemblyStrechedDropDown =
+                                      false; // Close other dropdown
+                                });
+                              },
+                              onSelect: (newValue) {
+                                setState(() {
+                                  _selectedRegion = newValue;
+                                  _selectedAssembly =
+                                      null; // IMPORTANT: Reset assembly when region changes
+                                  _assembliesForSelectedRegion =
+                                      List<String>.from(
+                                        regionsAndAssembliesData[newValue!] ??
+                                            [],
+                                      );
+                                  isRegionStrechedDropDown = false;
+                                });
+                              },
+                              controller: _regionscrollController,
+                            ),
                           ),
-                           _buildDropdown(
-                          hintText: 'Select Assembly',
-                          selectedValue: _selectedAssembly,
-                          items: _assembliesForSelectedRegion,
-                          isExpanded: isAssemblyStrechedDropDown,
-                          onToggle: (isExpanded) {
-                            setState(() {
-                              isAssemblyStrechedDropDown = isExpanded;
-                              isRegionStrechedDropDown =
-                                  false; // Close other dropdown
-                            });
-                          },
-                          onSelect: (newValue) {
-                            setState(() {
-                              _selectedAssembly = newValue;
-                              isAssemblyStrechedDropDown = false;
-                            });
-                          }, controller: _regionscrollController,
-                        ),
+                          SizedBox(width: size.width * 0.02),
+                          Expanded(
+                            child: _buildDropdown(
+                              hintText: 'Select Assembly',
+                              selectedValue: _selectedAssembly,
+                              items: _assembliesForSelectedRegion,
+                              isExpanded: isAssemblyStrechedDropDown,
+                              onToggle: (isExpanded) {
+                                setState(() {
+                                  isAssemblyStrechedDropDown = isExpanded;
+                                  isRegionStrechedDropDown =
+                                      false; // Close other dropdown
+                                });
+                              },
+                              onSelect: (newValue) {
+                                setState(() {
+                                  _selectedAssembly = newValue;
+                                  isAssemblyStrechedDropDown = false;
+                                });
+                              },
+                              controller: _regionscrollController,
+                            ),
+                          ),
                         ],
+                      ),
+                      SizedBox(height: size.width * 0.03),
+
+                      CustomInputField(
+                        controller: propertyAddress1Controller,
+                        label: "Property Address Line 1",
+                        labelColor: ColorPack.darkGray.withOpacity(0.7),
+                        placeholder: "Enter Property Address Line 1",
+                        height: 40,
+                        onTextChanged: (String str) {},
+                        textColor: ColorPack.black,
+                        obscureText: _obscureText,
+                        readOnly: false,
+                      ),
+                      SizedBox(height: size.width * 0.03),
+                      CustomInputField(
+                        controller: propertyAddress2Controller,
+                        label: "Property Address Line 2",
+                        labelColor: ColorPack.darkGray.withOpacity(0.7),
+                        placeholder: "Enter Property Address Line 2",
+                        height: 40,
+                        onTextChanged: (String str) {},
+                        textColor: ColorPack.black,
+                        obscureText: _obscureText,
+                        readOnly: false,
+                      ),
+                      SizedBox(height: size.width * 0.03),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Property Type",
+                            style: tTextStyle600.copyWith(
+                              fontSize: size.width * 0.04,
+                              color: ColorPack.darkGray.withOpacity(0.7),
+                            ),
+                          ),
+                          SizedBox(width: size.width*0.2,),
+                          Text(
+                            "Property Tier",
+                            style: tTextStyle600.copyWith(
+                              fontSize: size.width * 0.04,
+                              color: ColorPack.darkGray.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: size.width * 0.01),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _buildDropdown(
+                              hintText: 'Select Property Type',
+                              selectedValue: _selectedPropertyType,
+                              items: _propertyTypeList,
+                              isExpanded: isPropertyTypeStrechedDropDown,
+                              onToggle: (isExpanded) {
+                                setState(() {
+                                  isPropertyTypeStrechedDropDown = isExpanded;
+                                  // Close other dropdown
+                                });
+                              },
+                              onSelect: (newValue) {
+                                setState(() {
+                                  _selectedPropertyType = newValue;
+                                  // IMPORTANT: Reset assembly when region changes
+
+                                  isPropertyTypeStrechedDropDown = false;
+                                });
+                              },
+                              controller: _propertyTypescrollController,
+                            ),
+                          ),
+                          SizedBox(width: size.width * 0.02),
+                          Expanded(
+                            child: _buildDropdown(
+                              hintText: 'Select Property Tier',
+                              selectedValue: _selectedPropertyTier,
+                              items: _propertyTierList,
+                              isExpanded: isPropertyTierStrechedDropDown,
+                              onToggle: (isExpanded) {
+                                setState(() {
+                                  isPropertyTierStrechedDropDown = isExpanded;
+                                 // Close other dropdown
+                                });
+                              },
+                              onSelect: (newValue) {
+                                setState(() {
+                                  _selectedPropertyTier= newValue;
+                                  //isAssemblyStrechedDropDown = false;
+                                });
+                              },
+                              controller: _propertyTierscrollController,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: size.width * 0.03),
+                      CustomInputField(
+                        controller: numberUnitController,
+                        label: "Number of Units",
+                        labelColor: ColorPack.darkGray.withOpacity(0.7),
+                        placeholder: "Enter number of building units",
+                        height: 40,
+                        onTextChanged: (String str) {},
+                        textColor: ColorPack.black,
+                        obscureText: _obscureText,
+                        readOnly: false,
                       ),
                     ],
                   ),
@@ -238,6 +373,7 @@ class _AddPropertyState extends State<AddProperty> {
     required ValueChanged<bool> onToggle,
     required ValueChanged<String?> onSelect,
   }) {
+    final size = MediaQuery.of(context).size;
     bool isDisabled =
         (hintText == 'Select Assembly' && _selectedRegion == null);
     return Column(
@@ -249,6 +385,7 @@ class _AddPropertyState extends State<AddProperty> {
           },
           child: Container(
             width: double.infinity,
+            height: 40,
             padding: const EdgeInsets.symmetric(
               horizontal: 9,
               vertical: 7,
@@ -265,7 +402,7 @@ class _AddPropertyState extends State<AddProperty> {
                   Text(
                     hintText,
                     style: tTextStyleRegular.copyWith(
-                      fontSize: 16,
+                      fontSize: size.width * 0.03,
                       color: Colors.grey.shade600,
                     ),
                   )
@@ -274,7 +411,7 @@ class _AddPropertyState extends State<AddProperty> {
                   Text(
                     selectedValue,
                     style: tTextStyleRegular.copyWith(
-                      fontSize: 16,
+                      fontSize: size.width * 0.03,
                       color: ColorPack.black,
                     ),
                   ),
@@ -283,6 +420,7 @@ class _AddPropertyState extends State<AddProperty> {
                       ? Icons.keyboard_arrow_up
                       : Icons.keyboard_arrow_down,
                   color: Colors.grey.shade700,
+                  size: size.width * 0.035,
                 ),
               ],
             ),

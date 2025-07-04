@@ -9,9 +9,11 @@ class ProgressStepper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     // Determine colors based on the current step
     final bool isStep1Active = currentStep >= 1;
     final bool isStep2Active = currentStep >= 2;
+    final bool isStep3Active = currentStep >= 3;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40.0,),
@@ -21,6 +23,7 @@ class ProgressStepper extends StatelessWidget {
           _buildStep(
             number: '1',
             label: 'Create Account',
+
             isActive: isStep1Active,
           ),
           // --- Connecting Line ---
@@ -38,6 +41,20 @@ class ProgressStepper extends StatelessWidget {
             label: 'Review Details',
             isActive: isStep2Active,
           ),
+          Expanded(
+            child: Divider(
+              height: 2,
+              color: isStep2Active ? AppTheme.darkGrey : Colors.grey,
+              endIndent: 10,
+              indent: 10,
+            ),
+          ),
+          // --- Step 2 ---
+          _buildStep(
+            number: '3',
+            label: 'Verify',
+            isActive: isStep3Active,
+          ),
         ],
       ),
     );
@@ -49,6 +66,7 @@ class ProgressStepper extends StatelessWidget {
     required String label,
     required bool isActive,
   }) {
+    
     return Column(
       children: [
         Container(
@@ -62,7 +80,7 @@ class ProgressStepper extends StatelessWidget {
           child: Center(
             child: Text(
               number,
-              style: TextStyle(color: isActive ? Colors.white : Colors.grey),
+              style: TextStyle(color: isActive ? Colors.white : Colors.grey, fontSize: 8),
             ),
           ),
         ),
@@ -72,6 +90,7 @@ class ProgressStepper extends StatelessWidget {
           style: AppTheme.bodyText.copyWith(
             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
             color: isActive ? AppTheme.darkGrey : Colors.grey,
+            fontSize: 8
           ),
         ),
       ],

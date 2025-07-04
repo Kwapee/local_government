@@ -134,7 +134,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
               ),
               hintText: widget.placeholder,
               hintStyle: hintTextStyle.copyWith(
-                color: widget.isError ? Colors.red : ColorPack.black, fontSize: size.width*0.04
+                color: widget.isError ? Colors.red : ColorPack.black, fontSize: size.width*0.03
               ),
               suffixIcon:
                   widget.isPassword || widget.suffixIcon != null

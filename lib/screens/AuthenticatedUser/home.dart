@@ -230,16 +230,28 @@ class _HomeState extends State<Home> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          // 3. Access the scaffoldKey via widget.scaffoldKey
-                          widget.scaffoldKey.currentState?.openDrawer();
-                        },
-                        icon: Icon(
-                          Icons.menu,
-                          color: ColorPack.black.withOpacity(0.5),
-                          size: size.width * 0.08,
-                        ),
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              // 3. Access the scaffoldKey via widget.scaffoldKey
+                              widget.scaffoldKey.currentState?.openDrawer();
+                            },
+                            icon: Icon(
+                              Icons.menu,
+                              color: ColorPack.black.withOpacity(0.5),
+                              size: size.width * 0.08,
+                            ),
+                          ),
+                          SizedBox(width: size.width * 0.2),
+                          Text(
+                            "Welcome, Kwapee!",
+                            style: tTextStyleBold.copyWith(
+                              color: ColorPack.black,
+                              fontSize: size.width * 0.035,
+                            ),
+                          ),
+                        ],
                       ),
                       Padding(
                         padding: EdgeInsets.only(
@@ -411,7 +423,7 @@ class _HomeState extends State<Home> {
                           top: size.height * 0.03,
                           left: size.width * 0.01,
                           right: size.width * 0.01,
-                          bottom: size.height*0.03
+                          bottom: size.height * 0.03,
                         ),
                         child: Container(
                           width: size.width * 0.95,
@@ -490,12 +502,12 @@ class _HomeState extends State<Home> {
                                         ),
                                         const SizedBox(height: 12),
                                         CustomNewsEventsCard(
-                                          title: "Job Fair at Accra Sports Stadium",
+                                          title:
+                                              "Job Fair at Accra Sports Stadium",
                                           description:
                                               "Over 50 companies looking to hire local talent",
                                           date: "July 23,2024",
-                                          image:
-                                              "assets/images/job-fair.png",
+                                          image: "assets/images/job-fair.png",
                                         ),
                                       ],
                                     ),

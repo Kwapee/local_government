@@ -4,6 +4,7 @@ import 'package:local_government_app/utils/app_theme.dart';
 import 'package:local_government_app/utils/colors.dart';
 import 'package:local_government_app/widgets/auth_header.dart';
 import 'package:local_government_app/widgets/components/buttons/primary_button.dart';
+import 'package:local_government_app/widgets/components/inputfields/custom_field.dart';
 import 'package:local_government_app/widgets/components/inputfields/custom_text_field.dart';
 
 class SignIn extends StatefulWidget {
@@ -69,6 +70,7 @@ class _SignInState extends State<SignIn> {
                           child: Text('Login with email', style: AppTheme.h3),
                         ),
                         const SizedBox(height: 24),
+                        //CustomInputField(controller: emailController, label: "Email", labelColor: ColorPack.black, placeholder: "Enter your email", height: 50, onTextChanged: (String str) {}, textColor: ColorPack.black, obscureText: _obscureText, readOnly: false)
                         CustomTextField(
                           controller: emailController,
                           hintText: 'Email/Username',

@@ -6,6 +6,8 @@ import 'package:local_government_app/models/verification_results.dart';
 import 'package:local_government_app/screens/Authentication/SignUp/signup_reviewdetails.dart';
 import 'package:local_government_app/services/verification_api.dart';
 import 'package:local_government_app/utils/app_theme.dart';
+import 'package:local_government_app/utils/colors.dart';
+import 'package:local_government_app/utils/typography.dart';
 import 'package:local_government_app/widgets/auth_header.dart';
 import 'package:local_government_app/widgets/components/inputfields/custom_text_field.dart';
 import 'package:local_government_app/widgets/progress_stepper.dart';
@@ -242,13 +244,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Personal Information',
-                        style: AppTheme.h2.copyWith(fontSize: 18),
+                      Center(
+                        child: Text(
+                          'Personal Information',
+                          style: AppTheme.h2.copyWith(fontSize: 18),
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Please enter your card number, take a picture, and click verify.',
+                        style: tTextStyle600.copyWith(
+                          color: ColorPack.darkGray.withOpacity(0.7),
+                          fontSize: size.width * 0.035,
+                        ),
                       ),
                       const SizedBox(height: 24),
                       Text(
@@ -307,7 +315,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             backgroundColor:
                                 _currentStep == SignUpStep.verificationSuccess
                                     ? Colors.green
-                                    : const Color(0xFF2C3E50),
+                                    : ColorPack.red,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -372,7 +380,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   }
                                   : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2C3E50),
+                            backgroundColor: ColorPack.red,
                             disabledBackgroundColor: Colors.grey.shade400,
                             padding: const EdgeInsets.symmetric(
                               vertical: 12,
@@ -432,9 +440,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
         labelText: label,
         filled: true,
         fillColor: Colors.grey.shade100,
+        focusColor: ColorPack.black,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.0),
+          borderSide: BorderSide(color: ColorPack.black, width: 2.0),
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide(color: Colors.grey.shade300),
+
         ),
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:local_government_app/utils/app_theme.dart';
-
+import 'package:local_government_app/utils/colors.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -29,11 +29,12 @@ class CustomTextField extends StatelessWidget {
         hintText: hintText,
         prefixIcon: Icon(icon, color: AppTheme.grey),
         filled: true,
-        fillColor: AppTheme.secondary,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
+        fillColor: ColorPack.darkGray.withOpacity(0.07),
+        contentPadding: const EdgeInsets.symmetric(vertical: 5.0),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide.none,
+          //borderSide: BorderSide.none,
+          borderSide: BorderSide(color: ColorPack.darkGray.withOpacity(0.1)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),

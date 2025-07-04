@@ -4,6 +4,7 @@ import 'package:flutter/material.dart'; // Import your model
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:local_government_app/models/verification_results.dart';
+import 'package:local_government_app/screens/Authentication/SignUp/signup_verify.dart';
 import 'package:local_government_app/screens/Authentication/signin_screen.dart';
 import 'package:local_government_app/utils/app_theme.dart';
 import 'package:local_government_app/utils/colors.dart';
@@ -115,9 +116,10 @@ Widget _buildDropdown({
         },
         child: Container(
           width: double.infinity,
+          height: 50,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: isDisabled ? Colors.grey.shade200 : AppTheme.white,
+            color: isDisabled ? Colors.grey.shade200 : ColorPack.darkGray.withOpacity(0.07),
             border: Border.all(color: isDisabled ? Colors.grey.shade400 : ColorPack.darkGray),
             borderRadius: BorderRadius.circular(10),
           ),
@@ -205,145 +207,147 @@ Widget _buildDropdown({
                   'Please confirm your details and complete registration.',
             ),
             const ProgressStepper(currentStep: 2),
+            SizedBox(height: size.height*0.02),
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                decoration: const BoxDecoration(
-                  color: AppTheme.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30.0),
-                    topRight: Radius.circular(30.0),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: size.width * 0.02,),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      //vertical: size.height * 0.01,
+                      horizontal: size.width * 0.03,
+                    ),
+                  decoration: const BoxDecoration(
+                    color: AppTheme.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(30.0),
+                      topRight: Radius.circular(30.0),
+                    ),
                   ),
-                ),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // --- 3. FORM WITH ALL REQUIRED FIELDS ---
-                        /* _buildSectionHeader('Verified Information'),
-                        CustomTextField(
-                          controller: _firstNameController,
-                          hintText: 'First Name',
-                          icon: Icons.person_outline, readOnly: true,
-                        ),
-                        const SizedBox(height: 16),
-                        CustomTextField(
-                          controller: _surnameController,
-                          hintText: 'Surname',
-                          icon: Icons.person_outline,
-                           readOnly: true
-                        ),*/
-                        const SizedBox(height: 5),
-                        _buildSectionHeader('Complete Your Profile'),
-                        CustomTextField(
-                          controller: _emailController,
-                          hintText: 'Email Address',
-                          icon: Icons.email_outlined,
-                          keyboardType: TextInputType.emailAddress,
-                          readOnly: false,
-                        ),
-                        const SizedBox(height: 16),
-                        CustomTextField(
-                          controller: _passwordController,
-                          hintText: 'Create a Password',
-                          icon: Icons.lock_outline,
-                          isPassword: true,
-                          readOnly: false,
-                        ),
-                        const SizedBox(height: 16),
-                        CustomTextField(
-                          controller: _confirmpasswordController,
-                          hintText: 'Confirm Password',
-                          icon: Icons.lock_outline,
-                          isPassword: true,
-                          readOnly: false,
-                        ),
-                        const SizedBox(height: 16),
-                        CustomTextField(
-                          controller: _phoneController,
-                          hintText: 'Phone Number',
-                          icon: Icons.phone_outlined,
-                          keyboardType: TextInputType.phone,
-                          readOnly: false,
-                        ),
-                        const SizedBox(height: 16),
-
-                        _buildDropdown(
-                          hintText: 'Select Region',
-                          selectedValue: _selectedRegion,
-                          items: _regionsList,
-                          isExpanded: isRegionStrechedDropDown,
-                          onToggle: (isExpanded) {
-                            setState(() {
-                              isRegionStrechedDropDown = isExpanded;
-                              isAssemblyStrechedDropDown =
-                                  false; // Close other dropdown
-                            });
-                          },
-                          onSelect: (newValue) {
-                            setState(() {
-                              _selectedRegion = newValue;
-                              _selectedAssembly =
-                                  null; // IMPORTANT: Reset assembly when region changes
-                              _assembliesForSelectedRegion = List<String>.from(
-                                regionsAndAssembliesData[newValue!] ?? [],
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // --- 3. FORM WITH ALL REQUIRED FIELDS ---
+                          /* _buildSectionHeader('Verified Information'),
+                          CustomTextField(
+                            controller: _firstNameController,
+                            hintText: 'First Name',
+                            icon: Icons.person_outline, readOnly: true,
+                          ),
+                          const SizedBox(height: 16),
+                          CustomTextField(
+                            controller: _surnameController,
+                            hintText: 'Surname',
+                            icon: Icons.person_outline,
+                             readOnly: true
+                          ),*/
+                          const SizedBox(height: 5),
+                          _buildSectionHeader('Complete Your Profile'),
+                          CustomTextField(
+                            controller: _emailController,
+                            hintText: 'Email Address',
+                            icon: Icons.email_outlined,
+                            keyboardType: TextInputType.emailAddress,
+                            readOnly: false,
+                          ),
+                          const SizedBox(height: 16),
+                          CustomTextField(
+                            controller: _passwordController,
+                            hintText: 'Create a Password',
+                            icon: Icons.lock_outline,
+                            isPassword: true,
+                            readOnly: false,
+                          ),
+                          const SizedBox(height: 16),
+                          CustomTextField(
+                            controller: _confirmpasswordController,
+                            hintText: 'Confirm Password',
+                            icon: Icons.lock_outline,
+                            isPassword: true,
+                            readOnly: false,
+                          ),
+                          const SizedBox(height: 16),
+                          CustomTextField(
+                            controller: _phoneController,
+                            hintText: 'Phone Number',
+                            icon: Icons.phone_outlined,
+                            keyboardType: TextInputType.phone,
+                            readOnly: false,
+                          ),
+                          const SizedBox(height: 16),
+                
+                          _buildDropdown(
+                            hintText: 'Select Region',
+                            selectedValue: _selectedRegion,
+                            items: _regionsList,
+                            isExpanded: isRegionStrechedDropDown,
+                            onToggle: (isExpanded) {
+                              setState(() {
+                                isRegionStrechedDropDown = isExpanded;
+                                isAssemblyStrechedDropDown =
+                                    false; // Close other dropdown
+                              });
+                            },
+                            onSelect: (newValue) {
+                              setState(() {
+                                _selectedRegion = newValue;
+                                _selectedAssembly =
+                                    null; // IMPORTANT: Reset assembly when region changes
+                                _assembliesForSelectedRegion = List<String>.from(
+                                  regionsAndAssembliesData[newValue!] ?? [],
+                                );
+                                isRegionStrechedDropDown = false;
+                              });
+                            },
+                          ),
+                
+                          const SizedBox(height: 16),
+                          _buildDropdown(
+                            hintText: 'Select Assembly',
+                            selectedValue: _selectedAssembly,
+                            items: _assembliesForSelectedRegion,
+                            isExpanded: isAssemblyStrechedDropDown,
+                            onToggle: (isExpanded) {
+                              setState(() {
+                                isAssemblyStrechedDropDown = isExpanded;
+                                isRegionStrechedDropDown =
+                                    false; // Close other dropdown
+                              });
+                            },
+                            onSelect: (newValue) {
+                              setState(() {
+                                _selectedAssembly = newValue;
+                                isAssemblyStrechedDropDown = false;
+                              });
+                            },
+                          ),
+                
+                          const SizedBox(height: 32),
+                
+                          // --- 4. FINAL CALL-TO-ACTION BUTTON ---
+                          PrimaryButton(
+                            text: 'Next',
+                            buttonColor: ColorPack.red,
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SignUpOtpVerification(),
+                                ),
                               );
-                              isRegionStrechedDropDown = false;
-                            });
-                          },
-                        ),
-
-                        const SizedBox(height: 16),
-                        _buildDropdown(
-                          hintText: 'Select Assembly',
-                          selectedValue: _selectedAssembly,
-                          items: _assembliesForSelectedRegion,
-                          isExpanded: isAssemblyStrechedDropDown,
-                          onToggle: (isExpanded) {
-                            setState(() {
-                              isAssemblyStrechedDropDown = isExpanded;
-                              isRegionStrechedDropDown =
-                                  false; // Close other dropdown
-                            });
-                          },
-                          onSelect: (newValue) {
-                            setState(() {
-                              _selectedAssembly = newValue;
-                              isAssemblyStrechedDropDown = false;
-                            });
-                          },
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        // --- 4. FINAL CALL-TO-ACTION BUTTON ---
-                        PrimaryButton(
-                          text: 'Create Account',
-                          buttonColor: ColorPack.red,
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SignIn(),
-                              ),
-                            );
-                            // TODO: Implement FINAL registration logic
-                            // 1. Validate all fields
-                            // 2. Gather all data from controllers
-                            // 3. Make API call to your backend to create the user
-                            // 4. On success, navigate to the app's home screen or dashboard
-                            print('Ghana Card: ${widget.ghanaCardNumber}');
-                            print('First Name: ${_firstNameController.text}');
-                            print('Surname: ${_surnameController.text}');
-                            print('Email: ${_emailController.text}');
-                            print('Password: ${_confirmpasswordController.text}');
-                            print('Phone Number: ${_phoneController.text}');
-                            // etc.
-                          },
-                        ),
-                      ],
+                              // TODO: Implement FINAL registration logic
+                              // 1. Validate all fields
+                              // 2. Gather all data from controllers
+                              // 3. Make API call to your backend to create the user
+                              // 4. On success, navigate to the app's home screen or dashboard
+                              
+                              // etc.
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -357,9 +361,10 @@ Widget _buildDropdown({
 
   // Helper widget for section headers
   Widget _buildSectionHeader(String title) {
+    final size = MediaQuery.of(context).size;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
-      child: Text(title, style: AppTheme.h2.copyWith(fontSize: 18)),
+      child: Center(child: Text(title, style: AppTheme.h2.copyWith(fontSize: size.width*0.04))),
     );
   }
 }
